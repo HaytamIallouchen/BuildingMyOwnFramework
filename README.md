@@ -1,5 +1,5 @@
 # BuildingMyOwnFramework
-Building my first framework and github content
+Building my first own framework and github content
 
 I made this framework while studying Application-developer at the Bit Academy in Amsterdam, The Netherlands.
 Used languages: PHP, HTML, JS(a little bit). Maybe in the future TailwindCSS.
