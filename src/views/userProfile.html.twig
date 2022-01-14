@@ -7,13 +7,13 @@
     <title>Document</title>
 </head>
 <body>
-<h1> Login: </h1>
 <a href="/home/index">home</a>
-<form method="post">
-    Name: <input type="text" name="naam" required>
-    Password: <input type="text" type="password" name="pw" required>
-    <input type="submit" name="logging">
-</form>
-<a href="createUser">Nog geen account?</a>
+<h1>Profile</h1>
+<div class="userInfo">
+    {{picture}} <br>
+    {{username}}<br>
+    {{bio}} <br>
+</div>
+<a href="/user/editProfile">Edit profile here!</a>
 </body>
 </html>

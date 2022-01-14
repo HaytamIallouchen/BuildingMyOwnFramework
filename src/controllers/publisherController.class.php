@@ -2,13 +2,11 @@
 use \RedBeanPHP\R as R;
 require_once '../vendor/autoload.php';
 require_once 'services/UserService.class.php';
-class publisherController
+class publisherController extends userService
 {
     public function indexGET()
     {
-        $validate = new UserService();
-        $validate->validateLoggedIn();
-
+        $this->validateLoggedIn();
         $loader = new \Twig\Loader\FilesystemLoader('./views');
         $twig = new \Twig\Environment($loader, []);
         $publishers = R::findAll('publisher');
@@ -16,22 +14,17 @@ class publisherController
     }
     public function addGET()
     {
-        $validate = new UserService();
-        $validate->validateLoggedIn();
-
+        $this->validateLoggedIn();
         $loader = new \Twig\Loader\FilesystemLoader('./views');
         $twig = new \Twig\Environment($loader, []);
-        echo $twig->render('addPublisher.html.twig', []);
+        echo $twig->render('publisherAdd.html.twig', []);
     }
     public function addPOST()
     {
-        $validate = new UserService();
-        $validate->validateLoggedIn();
-
+        $this->validateLoggedIn();
         $pub = R::dispense('publisher');
         $pub->name = $_POST['naam'];
         $id = R::store($pub);
-        header('location /publisher/index');
         die;
     }
 }

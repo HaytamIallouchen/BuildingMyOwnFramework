@@ -1,24 +1,21 @@
 <?php
 use \RedBeanPHP\R as R;
 require_once '../vendor/autoload.php';
-require_once 'services/UserService.class.php';
 class authorController
 {
     public function indexGET()
     {
+        $authors = json_encode(R::getAll('SELECT * FROM author'));
         $loader = new \Twig\Loader\FilesystemLoader('./views');
         $twig = new \Twig\Environment($loader, []);
-        $authors = R::getAll('SELECT * FROM author');
-        echo $twig->render('authorIndex.html.twig', ['authors' => json_encode($authors) . PHP_EOL]);
+        echo $twig->render('authorIndex.html.twig', ['authors' => print_r($authors)]);
     }
-    
-    public function addPOST()
+    public function idGET()
     {
-        $aut = R::dispense('author');
-        $aut->name = $_POST['name'];
-        R::store($pub);
-        header('location /author/index');
-        die;
+        $requestedRoute = explode("/", $_SERVER['REQUEST_URI']);
+        $id = $requestedRoute[3];
+        $author = json_encode(R::getRow('SELECT * FROM author WHERE id = :id', [':id' => $id]));
+        return print_r($author);
     }
 }
 

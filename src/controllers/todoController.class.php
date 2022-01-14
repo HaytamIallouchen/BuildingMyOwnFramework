@@ -1,14 +1,12 @@
 <?php
 require_once '../vendor/autoload.php';
-require_once 'services/UserService.class.php';
+require_once 'services/userService.class.php';
 use \RedBeanPHP\R as R;
-class todoController
+class todoController extends userService
 {
     public function indexGET()
     {
-        $validate = new UserService();
-        $validate->validateLoggedIn();
-
+        $this->validateLoggedIn();
         $loader = new \Twig\Loader\FilesystemLoader('./views');
         $twig = new \Twig\Environment($loader, []);
         $todos = R::getAll('SELECT * FROM todo WHERE user_id = :id', [':id' => $_SESSION['id']]);
@@ -30,7 +28,7 @@ class todoController
         } else if (isset($_POST['delete'])) {
             $this->delete($_POST['delete']);
         } else {
-            header('location: http://localhost/todo/index');
+            $this->redirectTo('todo');
         }
     }
 
@@ -41,74 +39,68 @@ class todoController
             'user_id' => $_SESSION['id'],
             'status' => 'not done'
         ]);
-        header('location: http://localhost/todo/index');
-        die();
+        $this->redirectTo('todo');
     }
     
-    private function status($status, $postid)
+    public function status($status, $postid)
     {
         $todo = R::load('todo', $postid);
         $todo->status = $status;
         R::store($todo);
-        header('location: http://localhost/todo/index');
-        die;
+        $this->redirectTo('todo');
     }
 
-    private function rowswapup($postid)
+    public function rowswapup($postId)
     {
         $user = $_SESSION['id'];
-        $upperone = R::find( "todo", "WHERE id < '$postid' AND user_id = '$user' ORDER BY id DESC LIMIT 1");
-        foreach ($upperone as $row) {
+        $upperOne = R::find( "todo", "WHERE id < '$postId' AND user_id = '$user' ORDER BY id DESC LIMIT 1");
+        foreach ($upperOne as $row) {
             $new = $row['id'];
             $tempId = (2000000 + $todoId % 147483647);
-            R::exec("UPDATE todo SET id = $tempId WHERE id = $postid");
-            R::exec("UPDATE todo SET id = $postid WHERE id = $new");
+            R::exec("UPDATE todo SET id = $tempId WHERE id = $postId");
+            R::exec("UPDATE todo SET id = $postId WHERE id = $new");
             R::exec("UPDATE todo SET id = $new WHERE id = $tempId");
         }
-        header('location: http://localhost/todo/index');
-        die;
+        $this->redirectTo('todo');
     }
 
-    private function rowswapdown($postid)
+    public function rowswapdown($postId)
     {
         $user = $_SESSION['id'];
-        $upperone = R::find("todo", "WHERE id > '$postid' AND user_id = '$user' ORDER BY id ASC LIMIT 1");
-        foreach ($upperone as $row) {
+        $underOne = R::find("todo", "WHERE id > '$postId' AND user_id = '$user' ORDER BY id ASC LIMIT 1");
+        foreach ($underOne as $row) {
             $new = $row['id'];
             $tempId = (2000000 + $todoId % 147483647);
-            R::exec("UPDATE todo SET id = $tempId WHERE id = $postid");
-            R::exec("UPDATE todo SET id = $postid WHERE id = $new");
+            R::exec("UPDATE todo SET id = $tempId WHERE id = $postId");
+            R::exec("UPDATE todo SET id = $postId WHERE id = $new");
             R::exec("UPDATE todo SET id = $new WHERE id = $tempId");
         }
-        header('location: http://localhost/todo/index');
-        die;
+        $this->redirectTo('todo');
     }
 
-    private function delete($postid)
+    public function delete($postId)
     {
-        R::hunt( 'todo', ' id IN ( '. $postid .' ) ', $postid );
-        header('location: http://localhost/todo/index');
-        die;
+        R::hunt( 'todo', ' id IN ( '. $postId .' ) ', $postId );
+        $this->redirectTo('todo');
     }
 
-    private function editpage($postid)
+    public function editpage($postId)
     {
-        $user = $_SESSION['id'];
         $loader = new \Twig\Loader\FilesystemLoader('./views');
         $twig = new \Twig\Environment($loader, []);
-        $todo = R::find("todo", "WHERE id = '$postid' AND user_id = '$user'");
+        $user = $_SESSION['id'];
+        $todo = R::find("todo", "WHERE id = '$postId' AND user_id = '$user'");
         echo $twig->render('todoEdit.html.twig', ['todo' => $todo]);
     }
 
     public function editPOST()
     {
-        $postid = $_POST['wijzig'];
+        $postId = $_POST['wijzig'];
         $edit = $_POST['edittodo'];
         $user = $_SESSION['id'];
-        R::exec("UPDATE todo SET todo = '$edit' WHERE id = '$postid' AND user_id = '$user'");
 
-        header('location: http://localhost/todo/index');
-        die;
+        R::exec("UPDATE todo SET todo = '$edit' WHERE id = '$postId' AND user_id = '$user'");
+        $this->redirectTo('todo');
     }
 }
 ?>

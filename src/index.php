@@ -1,8 +1,7 @@
 <?php
 session_start();
 require_once '../vendor/autoload.php';
-require_once 'services/UserService.class.php';
-$validate = new UserService();
+require_once 'services/userService.class.php';
 use \RedBeanPHP\R as R;
 R::setup(
     'mysql:host=localhost;
@@ -10,14 +9,14 @@ R::setup(
     'root',
     ''
 );
-$linkExplode = explode("/", $_SERVER['REQUEST_URI']);
-if (!$linkExplode[1]) {
-    $linkExplode[1] = 'Home';
-    $linkExplode[2] = 'index';
+$requestedRoute = explode("/", $_SERVER['REQUEST_URI']);
+if (!$requestedRoute[1]) {
+    $requestedRoute[1] = 'home';
+    $requestedRoute[2] = 'index';
 }
 
-$controller = empty($linkExplode[1]) ? 'Home' : $linkExplode[1];
-$method = empty($linkExplode[2]) ? 'index' : $linkExplode[2];
+$controller = empty($requestedRoute[1]) ? 'home' : $requestedRoute[1];
+$method = empty($requestedRoute[2]) ? 'index' : $requestedRoute[2];
 
 if (file_exists('./Controllers/' . $controller . 'Controller.class.php')) {
     require('./Controllers/' . $controller . 'Controller.class.php');
@@ -27,11 +26,7 @@ if (file_exists('./Controllers/' . $controller . 'Controller.class.php')) {
     
     if (method_exists($class, $methodRequest)) {
         $class->$methodRequest();
-
-    } elseif ($controller == 'author' && is_numeric($linkExplode[2])) {
-        $data = R::getRow('SELECT * FROM author WHERE id = :id', [':id' => $linkExplode[2]]);
-        print_r(json_encode($data));
-
+        var_dump($_SESSION);
     } else {
         http_response_code(404);
         die;

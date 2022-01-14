@@ -51,12 +51,10 @@ const inputs = Array.from(document.querySelectorAll('[input]'));
         context[key] = input.value
         });
     });
-
 function showData() {
     const elements = Array.from(document.querySelectorAll('[preview]'));
     elements.forEach(element => {
         key = element.getAttribute('preview');
-
         element.textContent = context[key];
     });
 }
