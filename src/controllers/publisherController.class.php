@@ -7,24 +7,24 @@ class publisherController extends userService
     public function indexGET()
     {
         $this->validateLoggedIn();
-        $loader = new \Twig\Loader\FilesystemLoader('./views');
-        $twig = new \Twig\Environment($loader, []);
         $publishers = R::findAll('publisher');
-        echo $twig->render('publisherIndex.html.twig', ['publishers' => $publishers]);
+        echo $this->twigLoader()->render('publisherIndex.html.twig', ['publishers' => $publishers]);
     }
     public function addGET()
     {
         $this->validateLoggedIn();
-        $loader = new \Twig\Loader\FilesystemLoader('./views');
-        $twig = new \Twig\Environment($loader, []);
-        echo $twig->render('publisherAdd.html.twig', []);
+        ?> <a href="/publisher/index">back</a>
+        <form method="post">
+            Name: <input name="name">
+            <input type="submit" value="submit">
+        </form> <?php
     }
     public function addPOST()
     {
         $this->validateLoggedIn();
-        $pub = R::dispense('publisher');
-        $pub->name = $_POST['naam'];
-        $id = R::store($pub);
-        die;
+        $publisher = R::dispense('publisher');
+        $publisher->name = $_POST['name'];
+        R::store($publisher);
+        $this->redirectTo('publisher');
     }
 }

@@ -7,29 +7,8 @@ class todoController extends userService
     public function indexGET()
     {
         $this->validateLoggedIn();
-        $loader = new \Twig\Loader\FilesystemLoader('./views');
-        $twig = new \Twig\Environment($loader, []);
         $todos = R::getAll('SELECT * FROM todo WHERE user_id = :id', [':id' => $_SESSION['id']]);
-        echo $twig->render('todoIndex.html.twig', ['todos' => $todos]);
-    }
-
-    public function indexPOST()
-    {
-        if (isset($_POST['down'])) {
-            $this->rowswapdown($_POST['down']);
-        } else if (isset($_POST['up'])) {
-            $this->rowswapup($_POST['up']);
-        } else if (isset($_POST['done'])) {
-            $this->status('done', $_POST['done']);
-        } else if (isset($_POST['notdone'])) {
-            $this->status('notdone', $_POST['notdone']);
-        } else if (isset($_POST['edit'])) {
-            $this->editpage($_POST['edit']);
-        } else if (isset($_POST['delete'])) {
-            $this->delete($_POST['delete']);
-        } else {
-            $this->redirectTo('todo');
-        }
+        echo $this->twigLoader()->render('todoIndex.html.twig', ['todos' => $todos]);
     }
 
     public function storetodoPOST()
@@ -41,8 +20,16 @@ class todoController extends userService
         ]);
         $this->redirectTo('todo');
     }
-    
-    public function status($status, $postid)
+
+    public function indexPOST()
+    {
+        $postid = explode('-', $_POST['todoOption'])[0];
+        $function = explode('-', $_POST['todoOption'])[1];
+        $optionArg = explode('-', $_POST['todoOption'])[2];
+        $this->$function($postid, $optionArg);
+    }
+
+    public function status($postid, $status)
     {
         $todo = R::load('todo', $postid);
         $todo->status = $status;
@@ -50,26 +37,17 @@ class todoController extends userService
         $this->redirectTo('todo');
     }
 
-    public function rowswapup($postId)
+    public function rowSwap($postId, $direction)
     {
         $user = $_SESSION['id'];
-        $upperOne = R::find( "todo", "WHERE id < '$postId' AND user_id = '$user' ORDER BY id DESC LIMIT 1");
-        foreach ($upperOne as $row) {
-            $new = $row['id'];
-            $tempId = (2000000 + $todoId % 147483647);
-            R::exec("UPDATE todo SET id = $tempId WHERE id = $postId");
-            R::exec("UPDATE todo SET id = $postId WHERE id = $new");
-            R::exec("UPDATE todo SET id = $new WHERE id = $tempId");
+        if ($direction == 'up') {
+            $rowInWay = "WHERE id < $postId AND user_id = $user ORDER BY id DESC LIMIT 1";
+        } else {
+            $rowInWay = "WHERE id > $postId AND user_id = $user ORDER BY id ASC LIMIT 1";
         }
-        $this->redirectTo('todo');
-    }
-
-    public function rowswapdown($postId)
-    {
-        $user = $_SESSION['id'];
-        $underOne = R::find("todo", "WHERE id > '$postId' AND user_id = '$user' ORDER BY id ASC LIMIT 1");
-        foreach ($underOne as $row) {
-            $new = $row['id'];
+        $secondTodo = R::find("todo", $rowInWay);
+        foreach ($secondTodo as $todo) {
+            $new = $todo['id'];
             $tempId = (2000000 + $todoId % 147483647);
             R::exec("UPDATE todo SET id = $tempId WHERE id = $postId");
             R::exec("UPDATE todo SET id = $postId WHERE id = $new");
@@ -84,21 +62,18 @@ class todoController extends userService
         $this->redirectTo('todo');
     }
 
-    public function editpage($postId)
+    public function edit($postId)
     {
-        $loader = new \Twig\Loader\FilesystemLoader('./views');
-        $twig = new \Twig\Environment($loader, []);
         $user = $_SESSION['id'];
-        $todo = R::find("todo", "WHERE id = '$postId' AND user_id = '$user'");
-        echo $twig->render('todoEdit.html.twig', ['todo' => $todo]);
+        $todo = R::find("todo", "WHERE id = $postId AND user_id = $user");
+        echo $this->twigLoader()->render('todoEdit.html.twig', ['todo' => $todo]);
     }
 
     public function editPOST()
     {
-        $postId = $_POST['wijzig'];
-        $edit = $_POST['edittodo'];
+        $postId = $_POST['postid'];
+        $edit = $_POST['todo'];
         $user = $_SESSION['id'];
-
         R::exec("UPDATE todo SET todo = '$edit' WHERE id = '$postId' AND user_id = '$user'");
         $this->redirectTo('todo');
     }

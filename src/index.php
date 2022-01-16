@@ -26,7 +26,6 @@ if (file_exists('./Controllers/' . $controller . 'Controller.class.php')) {
     
     if (method_exists($class, $methodRequest)) {
         $class->$methodRequest();
-        var_dump($_SESSION);
     } else {
         http_response_code(404);
         die;

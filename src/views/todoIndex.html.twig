@@ -21,19 +21,20 @@
         <table>
             <tr> <th class="preview" preview></th> <th>Status</th> <th> S. Controll </th> <th>Order</th> </tr>
             {% for todo in todos %}
-            <form action"/todo/index" method="post" name="postid" value="{{ todo.id }}">
-            <tr>
-                <td>{{ todo.todo }}</td>
-                    
-                <td>{{ todo.status }}</td>
-                
-                    <td><button type="submit" name="done" value="{{ todo.id }}">done</button><button type="submit" name="notdone" value="{{ todo.id }}">notdone</button></td>
+            <form action"/todo/index" method="post">
+                <tr>
+                    <td>{{ todo.todo }}</td>
+                    <td>{{ todo.status }}</td>
                     <td>
-                        {% if loop.first == false %}<button type="submit" name="up" value="{{ todo.id }}">up</button>{% endif %}
-                        
-                        {% if loop.last == false %}<button type="submit" name="down" value="{{ todo.id }}">down</button>{% endif %}
+                        <button type="submit" name="todoOption" value="{{ todo.id }}-status-done">done</button>
+                        <button type="submit" name="todoOption" value="{{ todo.id }}-status-doing">doing</button>
+                    </td><td>
+                        {% if loop.first == false %}<button type="submit" name="todoOption" value="{{ todo.id }}-rowSwap-up">up</button>{% endif %}
+                        {% if loop.last == false %}<button type="submit" name="todoOption" value="{{ todo.id }}-rowSwap-down">down</button>{% endif %}
+                    </td><td>
+                        <button type="submit" name="todoOption" value="{{ todo.id }}-delete-delete">delete</button>
+                        <button type="submit" name="todoOption" value="{{ todo.id }}-edit-edit">edit</button>
                     </td>
-                    <td><button type="submit" name="delete" value="{{ todo.id }}">delete</button><button type="submit" name="edit" value="{{ todo.id }}">edit</button></td>
                 </tr>
             </form>
             {% endfor %}

@@ -19,4 +19,10 @@ class userService
             $this->redirectTo('login');
         }
     }
+    public function twigLoader()
+    {
+        $loader = new \Twig\Loader\FilesystemLoader('./views');
+        $twig = new \Twig\Environment($loader, []);
+        return $twig;
+    }
 }
