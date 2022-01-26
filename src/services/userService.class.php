@@ -16,7 +16,7 @@ class userService
     public function validateLoggedIn()
     {
         if (empty($_SESSION['token'])) {
-            $this->redirectTo('login');
+            $this->redirectToLogin();
         }
     }
     public function twigLoader()

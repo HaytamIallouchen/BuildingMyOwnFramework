@@ -6,6 +6,7 @@ class userController extends userService
 {
     public function indexGET()
     {
+        $this->validateLoggedIn();
         // $picture = $_SESSION['picture'];
         echo $this->twigLoader()->render('userProfile.html.twig', [
             'username' => $_SESSION['username'],
