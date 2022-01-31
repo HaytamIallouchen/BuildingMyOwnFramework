@@ -9,8 +9,6 @@ Technics: request/response, routing, template engines, ORM tools and Inversion o
 What i did:
 - setting up .htaccess file to make index.php our entry and request point.
 
-- printing Controller and method on the window for knowledge about routing.
-
 - installing Twig and RedbeanPHP with composer, add data & render templates using Redbean-function and Twig.
 
 - support method requests, for different actions on the same url.
